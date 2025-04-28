@@ -1,8 +1,12 @@
 package com.dosei.fit.workout.list
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Arrangement.spacedBy
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
@@ -37,6 +42,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -111,6 +117,8 @@ fun ExercisesScreen(
                 viewModel.onUpdateLoad(exercise, newLoad)
                 editingExercise = null
             },
+            initialSets = exercise.sets,
+            initialRepetitions = exercise.repetitions
         )
     }
 }
@@ -121,7 +129,7 @@ private data class ExercisesActions(
     val onClickEdit: (Exercise) -> Unit = {},
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 private fun ExercisesContent(
     items: List<Exercise>,
@@ -139,40 +147,92 @@ private fun ExercisesContent(
             )
         }
     ) { innerPadding ->
-        LazyColumn(modifier = Modifier.padding(innerPadding)) {
+
+        LazyColumn(
+            modifier = Modifier.padding(innerPadding),
+//            verticalArrangement = spacedBy(8.dp)
+        ) {
+            stickyHeader {
+                Row(
+                    modifier = Modifier
+                        .fillParentMaxWidth()
+                ) {
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Text(
+                        modifier = Modifier.weight(1.5f),
+                        text = "Nome",
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                    Text(
+                        modifier = Modifier.weight(.5f),
+                        text = "Séries",
+                        style = MaterialTheme.typography.labelLarge,
+                        textAlign = TextAlign.End
+                    )
+                    Text(
+                        modifier = Modifier.weight(.5f),
+                        text = "Reps",
+                        style = MaterialTheme.typography.labelLarge,
+                        textAlign = TextAlign.End
+                    )
+                    Text(
+                        modifier = Modifier.weight(.5f),
+                        text = "Peso",
+                        style = MaterialTheme.typography.labelLarge,
+                        textAlign = TextAlign.End
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                }
+                HorizontalDivider(Modifier.padding(top = 8.dp))
+            }
+
             items(items) { item ->
-                ListItem(
-                    overlineContent = { Text(text = item.muscleGroup.name) },
-                    headlineContent = { Text(text = item.name) },
-                    supportingContent = { Text(text = item.equipment.name) },
-                    trailingContent = {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = buildAnnotatedString {
-                                    append(item.currentWeightLoad.toString())
-                                    withStyle(SpanStyle(fontSize = 12.sp, color = GrayAlt)) {
-                                        append("Kg")
-                                    }
-                                },
-                                style = MaterialTheme.typography.bodyLarge,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Spacer(modifier = Modifier.width(16.dp))
-                            IconButton(onClick = { /*TODO*/ }) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_bookmark_outline),
-                                    contentDescription = ""
-                                )
-                            }
-                            IconButton(onClick = { actions.onClickEdit(item) }) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_exercise_outline),
-                                    contentDescription = ""
-                                )
-                            }
-                        }
+                Row(
+                    modifier = Modifier.fillParentMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Column(Modifier.weight(1.5f)) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(text = item.name, style = MaterialTheme.typography.bodyLarge)
+                        Text(
+                            text = buildAnnotatedString {
+                                append(item.muscleGroup.name)
+                                append(" • ")
+                                append(item.equipment.name)
+                            },
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
                     }
-                )
+                    Text(
+                        modifier = Modifier.weight(.5f),
+                        text = item.sets.toString(),
+                        textAlign = TextAlign.End
+                    )
+                    Text(
+                        modifier = Modifier.weight(.5f),
+                        text = item.repetitions.toString(),
+                        textAlign = TextAlign.End
+                    )
+                    Text(
+                        modifier = Modifier.weight(.5f),
+                        text = buildAnnotatedString {
+                            append(item.currentWeightLoad.toString())
+                            withStyle(
+                                SpanStyle(
+                                    fontSize = 12.sp,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            ) {
+                                append("Kg")
+                            }
+                        },
+                        textAlign = TextAlign.End
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                }
             }
         }
     }

@@ -14,6 +14,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
@@ -43,11 +44,15 @@ import kotlinx.coroutines.launch
 fun EditCurrentLoadModal(
     state: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
     initialValue: Int,
+    initialSets: Int,
+    initialRepetitions: Int,
     onDismiss: () -> Unit,
     onConfirm: (Int) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     var value by remember { mutableIntStateOf(initialValue) }
+    var sets by remember { mutableIntStateOf(initialSets) }
+    var reps by remember { mutableIntStateOf(initialRepetitions) }
 
     fun onDone() {
         scope.launch { state.hide() }.invokeOnCompletion { onConfirm(value) }
@@ -61,59 +66,26 @@ fun EditCurrentLoadModal(
     ) {
         Text(
             modifier = Modifier.padding(horizontal = 16.dp),
-            text = "Digite a nova carga (Kg):",
+            text = "Editar exercício",
             style = MaterialTheme.typography.titleMedium
         )
 
-        val fieldValue by remember(value) {
-            derivedStateOf {
-                val valueString = value.toString()
-                TextFieldValue(
-                    text = valueString,
-                    selection = TextRange(valueString.length)
-                )
-            }
-        }
+        WeightField(
+            value = value,
+            onDone = { if (doneEnabled) onDone() },
+            onUpdate = { value = it },
+        )
 
-        TextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 16.dp),
-            value = fieldValue,
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Number
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    defaultKeyboardAction(ImeAction.Done)
-                    if (doneEnabled) onDone()
-                }
-            ),
-            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
-            onValueChange = { newFieldValue ->
-                value = newFieldValue.text.filter { it.isDigit() }.toIntOrNull() ?: 0
-            },
-            leadingIcon = {
-                IconButton(onClick = { value = maxOf(0, value.dec()) }) {
-                    Icon(
-                        imageVector = Icons.Default.Remove,
-                        contentDescription = "remover 1kg"
-                    )
-                }
-            },
-            trailingIcon = {
-                IconButton(onClick = { value = value.inc() }) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "adicionar 1kg"
-                    )
-                }
-            },
-            isError = doneEnabled.not(),
-            supportingText = if (doneEnabled.not()) {
-                { Text(text = "O novo peso deve ser maior que zero.") }
-            } else null
+        SetsField(
+            value = sets,
+            onDone = { if (doneEnabled) onDone() },
+            onUpdate = { sets = it },
+        )
+        
+        RepsField(
+            value = reps,
+            onUpdate = { reps = it },
+            onDone = { if (doneEnabled) onDone() },
         )
 
         Button(
@@ -128,6 +100,90 @@ fun EditCurrentLoadModal(
     }
 }
 
+@Composable
+private fun WeightField(
+    onUpdate: (Int) -> Unit,
+    onDone: () -> Unit,
+    value: Int,
+) {
+    NumberTextField(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 16.dp),
+        label = { Text(text = "Carga (Kg)") },
+        value = value,
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Done,
+            keyboardType = KeyboardType.Number
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                defaultKeyboardAction(ImeAction.Done)
+                onDone()
+            }
+        ),
+        textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
+        onValueChange = { newValue -> onUpdate(newValue) },
+        isError = value == 0,
+    )
+}
+
+@Composable
+private fun SetsField(
+    onUpdate: (Int) -> Unit,
+    onDone: () -> Unit,
+    value: Int,
+) {
+    NumberTextField(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 16.dp),
+        label = { Text(text = "Séries") },
+        value = value,
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Done,
+            keyboardType = KeyboardType.Number
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                defaultKeyboardAction(ImeAction.Done)
+                onDone()
+            }
+        ),
+        textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
+        onValueChange = { newValue -> onUpdate(newValue) },
+        isError = value == 0,
+    )
+}
+
+@Composable
+private fun RepsField(
+    onUpdate: (Int) -> Unit,
+    onDone: () -> Unit,
+    value: Int,
+) {
+    NumberTextField(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 16.dp),
+        label = { Text(text = "Repetições") },
+        value = value,
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Done,
+            keyboardType = KeyboardType.Number
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                defaultKeyboardAction(ImeAction.Done)
+                onDone()
+            }
+        ),
+        textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
+        onValueChange = { newValue -> onUpdate(newValue) },
+        isError = value == 0,
+    )
+}
+
 @Preview
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -135,6 +191,8 @@ private fun Preview() {
     EditCurrentLoadModal(
         state = rememberStandardBottomSheetState(SheetValue.Expanded),
         initialValue = 10,
+        initialRepetitions = 15,
+        initialSets = 3,
         onDismiss = { },
         onConfirm = { }
     )
@@ -147,6 +205,8 @@ private fun PreviewError() {
     EditCurrentLoadModal(
         state = rememberStandardBottomSheetState(SheetValue.Expanded),
         initialValue = 0,
+        initialRepetitions = 0,
+        initialSets = 0,
         onDismiss = { },
         onConfirm = { }
     )
