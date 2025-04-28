@@ -10,9 +10,9 @@ class ExercisesViewModel(
 
     val items = repository.exercises
 
-    fun onUpdateLoad(item: Exercise, newLoad: Int) {
+    fun onUpdateLoad(item: Exercise, newLoad: Int, newSets: Int, newReps: Int) {
         request {
-            repository.updateWeightLoad(item.id, newLoad)
+            repository.updateWeightLoad(item.id, newLoad, newSets, newReps)
         }
     }
 }

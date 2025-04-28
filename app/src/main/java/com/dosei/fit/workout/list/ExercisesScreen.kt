@@ -1,31 +1,17 @@
 package com.dosei.fit.workout.list
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Arrangement.spacedBy
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeTopAppBar
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -35,26 +21,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.dosei.fit.workout.R
 import com.dosei.fit.workout.data.model.Exercise
 import com.dosei.fit.workout.data.model.mockExercises
 import com.dosei.fit.workout.list.filter.FilterScreen
 import com.dosei.fit.workout.list.filter.FilterState
 import com.dosei.fit.workout.list.widget.EditCurrentLoadModal
-import com.dosei.fit.workout.ui.theme.GrayAlt
+import com.dosei.fit.workout.list.widget.ExerciseRow
+import com.dosei.fit.workout.list.widget.SearchTopBar
+import com.dosei.fit.workout.list.widget.TableHeader
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -67,14 +45,15 @@ fun ExercisesScreen(
     val items by viewModel.items.collectAsState()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    var query by remember { mutableStateOf("") }
 
     var filterState by remember(items) {
         mutableStateOf(createFilter(items))
     }
 
-    val filteredItems by remember(filterState, items) {
+    val filteredItems by remember(query, filterState, items) {
         derivedStateOf {
-            filterItems(items, filterState)
+            filterItems(query, items, filterState)
         }
     }
 
@@ -101,10 +80,12 @@ fun ExercisesScreen(
     ) {
         ExercisesContent(
             items = filteredItems,
+            query = query,
             actions = ExercisesActions(
                 onBack = { controller.popBackStack() },
                 onClickFilter = { scope.launch { drawerState.open() } },
-                onClickEdit = { editingExercise = it }
+                onClickEdit = { editingExercise = it },
+                onSearch = { query = it }
             )
         )
     }
@@ -113,8 +94,8 @@ fun ExercisesScreen(
         EditCurrentLoadModal(
             initialValue = exercise.currentWeightLoad,
             onDismiss = { editingExercise = null },
-            onConfirm = { newLoad ->
-                viewModel.onUpdateLoad(exercise, newLoad)
+            onConfirm = { newLoad, newSets, newReps ->
+                viewModel.onUpdateLoad(exercise, newLoad, newSets, newReps)
                 editingExercise = null
             },
             initialSets = exercise.sets,
@@ -123,116 +104,35 @@ fun ExercisesScreen(
     }
 }
 
-private data class ExercisesActions(
+data class ExercisesActions(
     val onBack: () -> Unit = {},
     val onClickFilter: () -> Unit = {},
     val onClickEdit: (Exercise) -> Unit = {},
+    val onSearch: (String) -> Unit = {},
 )
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
+@OptIn(ExperimentalFoundationApi::class)
 private fun ExercisesContent(
+    query: String,
     items: List<Exercise>,
     actions: ExercisesActions,
 ) {
     Scaffold(
         topBar = {
-            LargeTopAppBar(
-                title = { Text(text = "Exercícios") },
-                actions = {
-                    IconButton(onClick = actions.onClickFilter) {
-                        Icon(imageVector = Icons.Default.FilterAlt, contentDescription = "")
-                    }
-                }
-            )
+            SearchTopBar(query = query, actions = actions)
         }
     ) { innerPadding ->
-
-        LazyColumn(
-            modifier = Modifier.padding(innerPadding),
-//            verticalArrangement = spacedBy(8.dp)
-        ) {
-            stickyHeader {
-                Row(
-                    modifier = Modifier
-                        .fillParentMaxWidth()
-                ) {
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Text(
-                        modifier = Modifier.weight(1.5f),
-                        text = "Nome",
-                        style = MaterialTheme.typography.labelLarge
-                    )
-                    Text(
-                        modifier = Modifier.weight(.5f),
-                        text = "Séries",
-                        style = MaterialTheme.typography.labelLarge,
-                        textAlign = TextAlign.End
-                    )
-                    Text(
-                        modifier = Modifier.weight(.5f),
-                        text = "Reps",
-                        style = MaterialTheme.typography.labelLarge,
-                        textAlign = TextAlign.End
-                    )
-                    Text(
-                        modifier = Modifier.weight(.5f),
-                        text = "Peso",
-                        style = MaterialTheme.typography.labelLarge,
-                        textAlign = TextAlign.End
-                    )
-                    Spacer(modifier = Modifier.width(16.dp))
-                }
-                HorizontalDivider(Modifier.padding(top = 8.dp))
-            }
+        LazyColumn(modifier = Modifier.padding(innerPadding)) {
+            stickyHeader { TableHeader() }
 
             items(items) { item ->
-                Row(
-                    modifier = Modifier.fillParentMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Column(Modifier.weight(1.5f)) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(text = item.name, style = MaterialTheme.typography.bodyLarge)
-                        Text(
-                            text = buildAnnotatedString {
-                                append(item.muscleGroup.name)
-                                append(" • ")
-                                append(item.equipment.name)
-                            },
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
-                    Text(
-                        modifier = Modifier.weight(.5f),
-                        text = item.sets.toString(),
-                        textAlign = TextAlign.End
-                    )
-                    Text(
-                        modifier = Modifier.weight(.5f),
-                        text = item.repetitions.toString(),
-                        textAlign = TextAlign.End
-                    )
-                    Text(
-                        modifier = Modifier.weight(.5f),
-                        text = buildAnnotatedString {
-                            append(item.currentWeightLoad.toString())
-                            withStyle(
-                                SpanStyle(
-                                    fontSize = 12.sp,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                            ) {
-                                append("Kg")
-                            }
-                        },
-                        textAlign = TextAlign.End
-                    )
-                    Spacer(modifier = Modifier.width(16.dp))
-                }
+                ExerciseRow(
+                    modifier = Modifier
+                        .fillParentMaxWidth()
+                        .clickable { actions.onClickEdit(item) },
+                    item = item
+                )
             }
         }
     }
@@ -254,11 +154,22 @@ private fun createFilter(items: List<Exercise>): FilterState {
     )
 }
 
-private fun filterItems(items: List<Exercise>, filter: FilterState): List<Exercise> {
+private fun filterItems(query: String, items: List<Exercise>, filter: FilterState): List<Exercise> {
     val weightRange = filter.minWeight..filter.maxWeight
-    return items.filter { exercise ->
-        exercise.muscleGroup in filter.selectedMuscleGroups
-                && exercise.currentWeightLoad in weightRange
+    val lowerQuery = query.lowercase()
+    return if (query.isNotEmpty()) {
+        items.filter { exercise ->
+            exercise.muscleGroup in filter.selectedMuscleGroups
+                    && exercise.currentWeightLoad in weightRange
+                    && (lowerQuery in exercise.name.lowercase()
+                    || lowerQuery in exercise.muscleGroup.name.lowercase()
+                    || lowerQuery in exercise.equipment.name.lowercase())
+        }
+    } else {
+        items.filter { exercise ->
+            exercise.muscleGroup in filter.selectedMuscleGroups
+                    && exercise.currentWeightLoad in weightRange
+        }
     }
 }
 
@@ -268,7 +179,8 @@ private fun Preview() {
     Surface(modifier = Modifier.fillMaxSize(), color = Color.White) {
         ExercisesContent(
             items = mockExercises(),
-            actions = ExercisesActions()
+            actions = ExercisesActions(),
+            query = ""
         )
     }
 }

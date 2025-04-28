@@ -16,12 +16,12 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,10 +31,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dosei.fit.workout.data.model.MuscleGroup
 import com.dosei.fit.workout.data.model.mockExercises
+import com.dosei.fit.workout.list.widget.NumberTextField
 
 @Composable
 fun FilterScreen(
@@ -58,13 +60,11 @@ fun FilterScreen(
                     filter.copy(selectedMuscleGroups = filter.selectedMuscleGroups + group)
                 }
             },
-            onChangeMaxWeight = { stringValue ->
-                val value = stringValue.filter { it.isDigit() }.toInt()
-                filter = filter.copy(maxWeight = value)
+            onChangeMaxWeight = { newValue ->
+                filter = filter.copy(maxWeight = newValue)
             },
-            onChangeMinWeight = { stringValue ->
-                val value = stringValue.filter { it.isDigit() }.toInt()
-                filter = filter.copy(minWeight = value)
+            onChangeMinWeight = { newValue ->
+                filter = filter.copy(minWeight = newValue)
             },
             onClose = onClose
         )
@@ -86,8 +86,8 @@ private data class FilterActions(
     val onClearFilter: () -> Unit = {},
     val onApplyFilter: () -> Unit = {},
     val onChangeGroup: (MuscleGroup) -> Unit = {},
-    val onChangeMinWeight: (String) -> Unit = {},
-    val onChangeMaxWeight: (String) -> Unit = {},
+    val onChangeMinWeight: (Int) -> Unit = {},
+    val onChangeMaxWeight: (Int) -> Unit = {},
     val onClose: () -> Unit = {},
 )
 
@@ -170,24 +170,22 @@ private fun FilterContent(
                 text = "Peso",
                 style = MaterialTheme.typography.labelLarge
             )
-            TextField(
+            NumberTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
-                value = state.minWeight.toString(),
+                value = state.minWeight,
                 onValueChange = actions.onChangeMinWeight,
-                label = { Text(text = "Mínimo") },
-                suffix = { Text(text = "Kg") }
+                label = { Text(text = "Mínimo (Kg)") },
             )
             Spacer(modifier = Modifier.height(16.dp))
-            TextField(
+            NumberTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
-                value = state.maxWeight.toString(),
+                value = state.maxWeight,
                 onValueChange = actions.onChangeMaxWeight,
-                label = { Text(text = "Máximo") },
-                suffix = { Text(text = "Kg") }
+                label = { Text(text = "Máximo (Kg)") },
             )
         }
     }

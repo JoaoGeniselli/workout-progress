@@ -1,6 +1,8 @@
 package com.dosei.fit.workout.list.widget
 
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -11,6 +13,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -22,6 +26,9 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun NumberTextField(
@@ -31,7 +38,7 @@ fun NumberTextField(
     range: IntRange = 0..Int.MAX_VALUE,
     enabled: Boolean = true,
     readOnly: Boolean = false,
-    textStyle: TextStyle = LocalTextStyle.current,
+    textStyle: TextStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
     label: @Composable (() -> Unit)? = null,
     placeholder: @Composable (() -> Unit)? = null,
     prefix: @Composable (() -> Unit)? = null,
@@ -82,7 +89,10 @@ fun NumberTextField(
             onValueChange(boundedValue)
         },
         leadingIcon = {
-            IconButton(onClick = { onValueChange(maxOf(value.dec(), range.first)) }) {
+            IconButton(
+                modifier = Modifier.focusable(false),
+                onClick = { onValueChange(maxOf(value.dec(), range.first)) },
+            ) {
                 Icon(
                     imageVector = Icons.Default.Remove,
                     contentDescription = "remover 1"
@@ -90,7 +100,10 @@ fun NumberTextField(
             }
         },
         trailingIcon = {
-            IconButton(onClick = { onValueChange(minOf(value.inc(), range.last)) }) {
+            IconButton(
+                modifier = Modifier.focusable(false),
+                onClick = { onValueChange(minOf(value.inc(), range.last)) }
+            ) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "adicionar 1"
@@ -98,4 +111,17 @@ fun NumberTextField(
             }
         },
     )
+}
+
+@Preview
+@Composable
+private fun Preview() {
+    Surface {
+        NumberTextField(
+            modifier = Modifier.padding(16.dp),
+            label = { Text(text = "Label") },
+            value = 15,
+            onValueChange = {}
+        )
+    }
 }

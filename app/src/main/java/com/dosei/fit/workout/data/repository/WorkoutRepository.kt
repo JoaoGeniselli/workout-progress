@@ -14,11 +14,16 @@ class WorkoutRepository(
     private val _exercises = MutableStateFlow(mockExercises())
     val exercises: StateFlow<List<Exercise>> get() = _exercises
 
-    suspend fun updateWeightLoad(id: Int, newLoad: Int) = withContext(ioContext) {
+    suspend fun updateWeightLoad(
+        id: Int,
+        newLoad: Int,
+        sets: Int,
+        reps: Int
+    ) = withContext(ioContext) {
         val updated = _exercises.value.toMutableList().apply {
             replaceAll { exercise ->
                 if (exercise.id == id) {
-                    exercise.copy(currentWeightLoad = newLoad)
+                    exercise.copy(currentWeightLoad = newLoad, sets = sets, repetitions = reps)
                 } else {
                     exercise
                 }
