@@ -12,7 +12,7 @@ class ExercisesViewModel(
 
     fun onUpdateLoad(item: Exercise, newLoad: Int, newSets: Int, newReps: Int) {
         request {
-            repository.updateWeightLoad(item.id, newLoad, newSets, newReps)
+            repository.updateExercise(item.id, newLoad, newSets, newReps)
         }
     }
 }

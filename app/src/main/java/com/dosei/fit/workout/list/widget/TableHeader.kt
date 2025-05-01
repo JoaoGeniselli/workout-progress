@@ -14,36 +14,36 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.dosei.fit.workout.R
 
 @Composable
-fun LazyItemScope.TableHeader() {
-    Row(
-        modifier = Modifier.fillParentMaxWidth()
-    ) {
+fun TableHeader(modifier: Modifier = Modifier) {
+    Row(modifier = modifier) {
         Spacer(modifier = Modifier.width(16.dp))
         Text(
             modifier = Modifier.weight(1.5f),
-            text = "Nome",
+            text = stringResource(R.string.table_header_name_label),
             style = MaterialTheme.typography.labelLarge
         )
         Text(
             modifier = Modifier.weight(.5f),
-            text = "Séries",
+            text = stringResource(R.string.table_header_sets_label),
             style = MaterialTheme.typography.labelLarge,
             textAlign = TextAlign.End
         )
         Text(
             modifier = Modifier.weight(.5f),
-            text = "Reps",
+            text = stringResource(R.string.table_header_repetitions_label),
             style = MaterialTheme.typography.labelLarge,
             textAlign = TextAlign.End
         )
         Text(
             modifier = Modifier.weight(.5f),
-            text = "Peso",
+            text = stringResource(R.string.table_header_load_label),
             style = MaterialTheme.typography.labelLarge,
             textAlign = TextAlign.End
         )

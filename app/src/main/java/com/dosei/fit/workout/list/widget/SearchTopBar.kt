@@ -22,8 +22,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.dosei.fit.workout.R
 import com.dosei.fit.workout.list.ExercisesActions
 
 @Composable
@@ -35,7 +37,10 @@ fun SearchTopBar(query: String, actions: ExercisesActions) {
             .windowInsetsPadding(TopAppBarDefaults.windowInsets)
             .padding(16.dp),
         leadingIcon = {
-            Icon(imageVector = Icons.Default.Search, contentDescription = "pesquisar")
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = stringResource(R.string.action_search)
+            )
         },
         trailingIcon = {
             Row {
@@ -45,19 +50,19 @@ fun SearchTopBar(query: String, actions: ExercisesActions) {
                     ) {
                         Icon(
                             imageVector = Icons.Default.Clear,
-                            contentDescription = "limpar"
+                            contentDescription = stringResource(R.string.action_clear)
                         )
                     }
                 }
                 IconButton(onClick = actions.onClickFilter) {
                     Icon(
                         imageVector = Icons.Default.FilterAlt,
-                        contentDescription = "filtrar"
+                        contentDescription = stringResource(R.string.action_filter)
                     )
                 }
             }
         },
-        placeholder = { Text(text = "Exercícios") },
+        placeholder = { Text(text = stringResource(R.string.exercises_title)) },
         content = {},
         query = query,
         onQueryChange = actions.onSearch,

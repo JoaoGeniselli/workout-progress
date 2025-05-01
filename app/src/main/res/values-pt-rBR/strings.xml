@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Treino</string>
+    <string name="trainings_title">Treinos</string>
+    <string name="exercises_title">Exercícios</string>
+    <string name="action_search">Pesquisar</string>
+    <string name="action_clear">Limpar</string>
+    <string name="action_filter">Filtrar</string>
+    <string name="action_expand">Expandir</string>
+    <string name="action_collapse">Colapsar</string>
+    <string name="action_edit">Editar</string>
+    <string name="action_exclude">Excluir</string>
+    <string name="edit_exercise_modal_title">Editar exercício</string>
+    <string name="action_update">Atualizar</string>
+    <string name="edit_exercise_load_label">Carga (Kg)</string>
+    <string name="edit_exercise_set_label">Séries</string>
+    <string name="edit_exercise_repetitions_label">Repetições</string>
+    <string name="suffix_kg">Kg</string>
+    <string name="action_decrease">Diminuir 1</string>
+    <string name="action_increase">Adicionar 1</string>
+    <string name="table_header_name_label">Nome</string>
+    <string name="table_header_sets_label">Séries</string>
+    <string name="table_header_repetitions_label">Rep.</string>
+    <string name="table_header_load_label">Peso</string>
+    <string name="action_add_training">Adicionar treino</string>
+</resources>

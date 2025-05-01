@@ -23,11 +23,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.dosei.fit.workout.R
 import kotlinx.coroutines.launch
 
 @Composable
@@ -57,7 +59,7 @@ fun EditCurrentLoadModal(
     ) {
         Text(
             modifier = Modifier.padding(horizontal = 16.dp),
-            text = "Editar exercício",
+            text = stringResource(R.string.edit_exercise_modal_title),
             style = MaterialTheme.typography.titleMedium
         )
 
@@ -84,7 +86,7 @@ fun EditCurrentLoadModal(
             onClick = { onDone() },
             enabled = doneEnabled
         ) {
-            Text(text = "Atualizar")
+            Text(text = stringResource(R.string.action_update))
         }
     }
 }
@@ -98,7 +100,7 @@ private fun WeightField(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 16.dp),
-        label = { Text(text = "Carga (Kg)") },
+        label = { Text(text = stringResource(R.string.edit_exercise_load_label)) },
         value = value,
         keyboardOptions = KeyboardOptions(
             imeAction = ImeAction.Next,
@@ -118,7 +120,7 @@ private fun SetsField(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 16.dp),
-        label = { Text(text = "Séries") },
+        label = { Text(text = stringResource(R.string.edit_exercise_set_label)) },
         value = value,
         keyboardOptions = KeyboardOptions(
             imeAction = ImeAction.Next,
@@ -139,7 +141,7 @@ private fun RepsField(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 16.dp),
-        label = { Text(text = "Repetições") },
+        label = { Text(text = stringResource(R.string.edit_exercise_repetitions_label)) },
         value = value,
         keyboardOptions = KeyboardOptions(
             imeAction = ImeAction.Done,

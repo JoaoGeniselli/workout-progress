@@ -1,16 +1,25 @@
 <resources>
     <string name="app_name">Workout</string>
-
-
-
-    Wood Chop
-    Renegade Row
-    Swing
-    Plank T
-    Tricep Kickback
-    Shoulder Press
-    Lateral Raise
-    Bent-Over Reverse Fly
-    Wrist Curl
-    Upright Row
+    <string name="trainings_title">Trainings</string>
+    <string name="exercises_title">Exercises</string>
+    <string name="action_search">Search</string>
+    <string name="action_clear">Clear</string>
+    <string name="action_filter">Filter</string>
+    <string name="action_expand">Expand</string>
+    <string name="action_collapse">Collapse</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_exclude">Exclude</string>
+    <string name="edit_exercise_modal_title">Edit exercise</string>
+    <string name="action_update">Update</string>
+    <string name="edit_exercise_load_label">Weight Load (Kg)</string>
+    <string name="edit_exercise_set_label">Sets</string>
+    <string name="edit_exercise_repetitions_label">Repetitions</string>
+    <string name="suffix_kg">Kg</string>
+    <string name="action_decrease">Decrease</string>
+    <string name="action_increase">Increase</string>
+    <string name="table_header_name_label">Name</string>
+    <string name="table_header_sets_label">Sets</string>
+    <string name="table_header_repetitions_label">Reps</string>
+    <string name="table_header_load_label">Load</string>
+    <string name="action_add_training">Add training</string>
 </resources>

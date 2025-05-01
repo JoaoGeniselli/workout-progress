@@ -26,7 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import com.dosei.fit.workout.data.model.Exercise
-import com.dosei.fit.workout.data.model.mockExercises
+import com.dosei.fit.workout.data.sample.sampleExercises
 import com.dosei.fit.workout.list.filter.FilterScreen
 import com.dosei.fit.workout.list.filter.FilterState
 import com.dosei.fit.workout.list.widget.EditCurrentLoadModal
@@ -124,7 +124,7 @@ private fun ExercisesContent(
         }
     ) { innerPadding ->
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
-            stickyHeader { TableHeader() }
+            stickyHeader { TableHeader(Modifier.fillParentMaxWidth()) }
 
             items(items) { item ->
                 ExerciseRow(
@@ -173,12 +173,12 @@ private fun filterItems(query: String, items: List<Exercise>, filter: FilterStat
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, locale = "pt-rBR")
 @Composable
 private fun Preview() {
     Surface(modifier = Modifier.fillMaxSize(), color = Color.White) {
         ExercisesContent(
-            items = mockExercises(),
+            items = sampleExercises(),
             actions = ExercisesActions(),
             query = ""
         )
